@@ -71,7 +71,6 @@
 |in-place|제자리|허남규||
 |instance|인스턴스|박정환|음차 표기|
 |instantiate|생성하다|박정환||
-|label|라벨|이가람|음차 표기||
 |Layer|계층|박정환||
 |learning rate, lr|학습률|박정환||
 |loss|손실|박정환||
@@ -106,4 +105,4 @@
 |training|학습|이하람||
 |warmstart|빠르게 시작하기|박정환|Warmstarting Model = 빠르게 모델 시작하기|
 |weight|가중치|박정환||
-|wrapper|래퍼|박정환|음차 표기|
+|wrapper|래퍼|박정환|음차 표기||
