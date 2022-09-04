@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Audio Feature Extractions
+오디오 특징 추출
 =========================
 
-``torchaudio`` implements feature extractions commonly used in the audio
-domain. They are available in ``torchaudio.functional`` and
-``torchaudio.transforms``.
+``torchaudio``은 오디오 도메인에서 흔히 사용되는 특징 추출을 구현합니다. 
+``torchaudio.functional``와 ``torchaudio.transforms``에서 사용 가능합니다.
 
-``functional`` implements features as standalone functions.
-They are stateless.
+``functional``은 독립형 함수들과 같은 특징들을 구현합니다. 
+이것들은 스테이트리스(무상태)입니다.
 
-``transforms`` implements features as objects,
-using implementations from ``functional`` and ``torch.nn.Module``.
-They can be serialized using TorchScript.
+``transforms`` 는 ``functional``과 ``torch.nn.Module``의 구현들을 이용하여 오브젝트와 같은 특징들을 구현합니다.
+이것들은 TorchScript를 사용하여 직렬화할 수 있습니다.
 """
 
 import torch
@@ -24,12 +22,12 @@ print(torch.__version__)
 print(torchaudio.__version__)
 
 ######################################################################
-# Preparation
+# 준비
 # -----------
 #
 # .. note::
 #
-#    When running this tutorial in Google Colab, install the required packages
+#    구글 코랩에서 이 튜토리얼을 실행할 때 필요한 패키지들을 설치해주세요.
 #
 #    .. code::
 #
@@ -78,25 +76,23 @@ def plot_fbank(fbank, title=None):
 
 
 ######################################################################
-# Overview of audio features
+# 오디오 특징 개요
 # --------------------------
 #
-# The following diagram shows the relationship between common audio features
-# and torchaudio APIs to generate them.
+# 아래의 도표는 일반적인 오디오 특징들과 그것들을 생성하기 위한 torchaudio API 간의 관계를 보여줍니다.
 #
 # .. image:: https://download.pytorch.org/torchaudio/tutorial-assets/torchaudio_feature_extractions.png
 #
-# For the complete list of available features, please refer to the
-# documentation.
+# 사용 가능한 특징들의 전체 리스트를 보기 위해서는 다음 문서를 참조해주세요.
 #
 
 
 ######################################################################
-# Spectrogram
+# 스펙트로그램
 # -----------
 #
-# To get the frequency make-up of an audio signal as it varies with time,
-# you can use :py:func:`torchaudio.transforms.Spectrogram`.
+# 시간에 따라 변하는 오디오 신호의 주파수 구성을 얻기 위해
+# :py:func:`torchaudio.transforms.Spectrogram`을 사용할 수 있습니다.
 #
 
 SPEECH_WAVEFORM, SAMPLE_RATE = torchaudio.load(SAMPLE_SPEECH)
@@ -112,7 +108,7 @@ n_fft = 1024
 win_length = None
 hop_length = 512
 
-# Define transform
+# 변환 정의
 spectrogram = T.Spectrogram(
     n_fft=n_fft,
     win_length=win_length,
@@ -125,7 +121,7 @@ spectrogram = T.Spectrogram(
 ######################################################################
 #
 
-# Perform transform
+# 변환 수행
 spec = spectrogram(SPEECH_WAVEFORM)
 
 ######################################################################
@@ -137,7 +133,7 @@ plot_spectrogram(spec[0], title="torchaudio")
 # GriffinLim
 # ----------
 #
-# To recover a waveform from a spectrogram, you can use ``GriffinLim``.
+# 스펙트로그램으로부터 파형을 복구하기 위해서 ``GriffinLim``을 사용할 수 있습니다.
 #
 
 torch.random.manual_seed(0)
@@ -173,14 +169,14 @@ plot_waveform(reconstructed_waveform, SAMPLE_RATE, title="Reconstructed")
 Audio(reconstructed_waveform, rate=SAMPLE_RATE)
 
 ######################################################################
-# Mel Filter Bank
+# 멜 필터 뱅크
 # ---------------
 #
-# :py:func:`torchaudio.functional.melscale_fbanks` generates the filter bank
-# for converting frequency bins to mel-scale bins.
+# :py:func:`torchaudio.functional.melscale_fbanks`은 주파수 빈을 멜 스케일 빈으로
+# 변환하기 위해 필터 뱅크를 생성합니다. 
 #
-# Since this function does not require input audio/features, there is no
-# equivalent transform in :py:func:`torchaudio.transforms`.
+# 이 함수는 입력 오디오/특징을 필요로 하지 않기 때문에, :py:func:`torchaudio.transforms`에 
+# 동일한 변환은 없습니다.
 #
 
 n_fft = 256
@@ -202,11 +198,10 @@ mel_filters = F.melscale_fbanks(
 plot_fbank(mel_filters, "Mel Filter Bank - torchaudio")
 
 ######################################################################
-# Comparison against librosa
+# librosa와의 비교
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# For reference, here is the equivalent way to get the mel filter bank
-# with ``librosa``.
+# 참고로 다음은 ``librosa``를 사용하여 동일하게 멜 필터를 얻는 방법입니다.
 #
 
 mel_filters_librosa = librosa.filters.mel(
@@ -228,13 +223,12 @@ mse = torch.square(mel_filters - mel_filters_librosa).mean().item()
 print("Mean Square Difference: ", mse)
 
 ######################################################################
-# MelSpectrogram
+# 멜스펙트로그램
 # --------------
 #
-# Generating a mel-scale spectrogram involves generating a spectrogram
-# and performing mel-scale conversion. In ``torchaudio``,
-# :py:func:`torchaudio.transforms.MelSpectrogram` provides
-# this functionality.
+# 멜 스케일의 스펙트로그램을 생성하는 것은 스펙트로그램을 만들고 멜 스케일 변환을
+# 수행하는 것을 포함합니다. ``torchaudio`` 내의,
+# :py:func:`torchaudio.transforms.MelSpectrogram` 함수가 이러한 기능을 제공합니다.
 #
 
 n_fft = 1024
@@ -264,11 +258,11 @@ melspec = mel_spectrogram(SPEECH_WAVEFORM)
 plot_spectrogram(melspec[0], title="MelSpectrogram - torchaudio", ylabel="mel freq")
 
 ######################################################################
-# Comparison against librosa
+# librosa와의 비교
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# For reference, here is the equivalent means of generating mel-scale
-# spectrograms with ``librosa``.
+# 참고를 위해 ``librosa``를 사용하여 동일하게 멜 스케일 스펙트로그램을 생성하는 방법을
+# 소개합니다.
 #
 
 melspec_librosa = librosa.feature.melspectrogram(
@@ -323,7 +317,7 @@ mfcc = mfcc_transform(SPEECH_WAVEFORM)
 plot_spectrogram(mfcc[0])
 
 ######################################################################
-# Comparison against librosa
+# librosa와의 비교
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
@@ -377,7 +371,7 @@ lfcc = lfcc_transform(SPEECH_WAVEFORM)
 plot_spectrogram(lfcc[0])
 
 ######################################################################
-# Pitch
+# 피치(Pitch)
 # -----
 #
 
@@ -406,12 +400,11 @@ def plot_pitch(waveform, sr, pitch):
 plot_pitch(SPEECH_WAVEFORM, SAMPLE_RATE, pitch)
 
 ######################################################################
-# Kaldi Pitch (beta)
+# 칼디 피치(Kaldi Pitch) (베타)
 # ------------------
 #
-# Kaldi Pitch feature [1] is a pitch detection mechanism tuned for automatic
-# speech recognition (ASR) applications. This is a beta feature in ``torchaudio``,
-# and it is available as :py:func:`torchaudio.functional.compute_kaldi_pitch`.
+# 칼디 피치(Kaldi Pitch)는 자동 음성 인식(ASR) 애플리케이션을 위해 조정된 피치 감지 메커니즘입니다.
+# 이것은 ``torchaudio``의 베타 기능이며 :py:func:`torchaudio.functional.compute_kaldi_pitch`로 사용할 수 있습니다.
 #
 # 1. A pitch extraction algorithm tuned for automatic speech recognition
 #
